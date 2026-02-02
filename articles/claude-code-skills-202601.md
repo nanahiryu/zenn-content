@@ -1,6 +1,6 @@
 ---
 title: "2026年初頭のClaude Code Skillsについてまとめる"
-emoji: "🛠️"
+emoji: "🍽️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["claudecode", "claude", "ai", "anthropic"]
 published: true

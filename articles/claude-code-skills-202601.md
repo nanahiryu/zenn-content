@@ -14,7 +14,7 @@ Claude Codeの進化が凄まじいです。
 
 その中でも一際目を引いたのがやはりv2.1.3のcommandsとskillsの統合でしょうか。Xを見ているとこれを機にcommandsからskillsへの移行がかなり加速したように見えます。
 
-と言うわけでこの記事では、skillsが登場から他の機能のどんな機能を食って今日まで来たのかをまとめてみようと思います。
+と言うわけでこの記事では、skillsが登場から他のどんな機能を食って今日まで来たのかをまとめてみようと思います。
 
 # 0. 前提
 
@@ -35,13 +35,14 @@ Claude Codeには、AIの振る舞いをカスタマイズするための4つの
 
 Skillsの持っていた主な特徴は以下の通りでした。
 
-- 自動発見（Auto-discovery）: フロントマターの`description`に基づいて、Claudeが関連時に自動でロード
-- ポータビリティ: Claude.ai / Claude Code / APIの3プラットフォームで共通フォーマット（"Create once, use everywhere"）
-- Progressive Disclosure: メタデータ（約100トークン）のみ常駐し、必要時に詳細をロード
+- Composable: スキルを組み合わせて複雑なタスクを実行できる
+- Portable: スキルをClaude.ai / Claude Code / APIの3プラットフォームで共通フォーマットとして利用可能（"Create once, use everywhere"）
+- Efficient: フロントマターのdescriptionに基づいて、必要な時だけスキルをロード
+- Powerful: スキルには実行可能コードを含められる
 
 ## 当時の課題感
 
-当時の課題感は当時の記事によると、以下の通りでした。
+当時の課題感は以下の公式ブログに記載されている通り、専門的なエージェントを作成するコストの高さ、拡張性の乏しさがあったように思えます。
 
 https://claude.com/blog/equipping-agents-for-the-real-world-with-agent-skills
 
@@ -53,13 +54,11 @@ https://claude.com/blog/equipping-agents-for-the-real-world-with-agent-skills
 >
 > ユースケースごとに断片化されたカスタム設計のエージェントを構築する代わりに、誰でも手続き的な知識を記録・共有することで、組み合わせ可能な能力を用いてエージェントを専門化できるようになります。
 
-この辺りを見るに、専門的なスキルをエージェントに与えることがskillsが生み出された背景だったように見えます。
-
-また、当時の記事を見るとMCPツールのコンテキスト圧迫を課題に感じ、このskillsの持つProgressive disclosureという特性を評価する声が多かったように感じます。
+また、他の記事を見てみるとMCPツールのコンテキスト圧迫を課題に感じる声もあり、skillsの持つProgressive disclosure(段階的開示)という特性を評価する声も多かったみたいですね。
 
 https://azukiazusa.dev/blog/mcp-tool-context-overflow/#progressive-disclosure%E6%AE%B5%E9%9A%8E%E7%9A%84%E9%96%8B%E7%A4%BA
 
-# 2. 登場時のCommands, Rules, Subagents, Skillsの棲み分け
+# 2. 登場時のRules, Commands, Skills, Subagentsの棲み分け
 
 2025年10月のskills登場時、skillsにはさほど多くの機能が追加されていなかったため4つの機能には明確な役割分担があったように思えます。
 
@@ -76,7 +75,7 @@ https://code.claude.com/docs/en/skills
 
 https://www.builder.io/blog/agent-skills-rules-commands
 
-# 3. アップデート履歴と機能の関係変化
+# 3. アップデート履歴
 
 次にskills登場後からskillsに関連する主要な（skillsの立場が変化するような）アップデートを見てみます。
 細かいUXの改善系のアップデートは多数含まれているのですが、ここでは省略しています。
@@ -85,7 +84,7 @@ https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
 
 ## v2.0.20: Skills登場
 
-リリース
+リリース✨
 
 ## v2.0.43: subagentsのskillsフロントマターの追加
 
@@ -116,7 +115,7 @@ commandsとskillsが統合されました。
 
 rulesとの関係性は発表当初から変わっていないように思えます。
 相変わらず初期から読み込まれるrulesと必要なときに呼び出されるskillsという関係性は維持されています。
-強いて言えば、subagentsに`skills`フロントマターが追加されたことでsubagentsに関してはrulesの役割と一部重複していると言えるかもしれません。
+強いて言えば、subagentsに`skills`フロントマターが追加されたことで「起動時に前提知識を与える」という点ではrulesの役割と一部重複していると言えるかもしれません。
 
 ## Commands と Skills
 
@@ -130,7 +129,7 @@ v2.1.3の統合により、commandsはほとんどskillsの簡易版のような
 
 https://giginet.hateblo.jp/entry/2026/01/27/202636
 
-結論だけ引用させていただくと、
+giginetさんの記事ではskillsの内容を「情報参照用(Reference Content)」と「タスク実行用(Task Content)」の2種類に分類して整理されています。結論だけ引用させていただくと、
 
 - skillsには情報参照用のReference Contentとタスク実行用のTask Contentがある
 - Reference Contentとしてのskillsを利用する際はsubagentsを主とし、`skills`フロントマターに展開する

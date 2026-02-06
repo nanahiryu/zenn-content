@@ -18,6 +18,8 @@ Claude Codeの進化が凄まじいです。
 
 # 0. 前提
 
+## Claude Codeの主な4つの拡張方法
+
 Claude Codeには、AIの振る舞いをカスタマイズするための4つの主要な仕組み(Hooksは除く)があります。
 
 | 機能          | 配置場所            | 概要                       |
@@ -27,7 +29,14 @@ Claude Codeには、AIの振る舞いをカスタマイズするための4つの
 | **Skills**    | `.claude/skills/`   | 自動/手動両対応の専門知識  |
 | **Subagents** | `.claude/agents/`   | 独立したタスク実行         |
 
-本記事では、2025年10月に登場した**Skills**について2026年1月31日現在のアップデートを含めて状況をまとめてみます。
+## skillsのフロントマター
+
+Claude Codeではcommandsやskillsの定義ファイルのヘッダ部分にフロントマターと呼ばれるメタデータを記述することで、動作をカスタマイズすることができます。
+詳しくはリンク先をご参照ください。
+
+https://code.claude.com/docs/en/skills#frontmatter-reference
+
+---
 
 # 1. Skillsの登場
 
@@ -102,7 +111,7 @@ skillsのフロントマターで `context: fork` を指定することで、ski
 ### skillsにagentフロントマターの追加
 
 skillsのフロントマターで `agent` フィールドを指定できるようになりました。
-これにより特定のサブエージェントを指定してskillsを実行可能になりました。
+これにより`context: fork`が指定されている際に特定のサブエージェントを指定してskillsを実行可能になりました。
 
 ## v2.1.3: CommandsとSkillsが統合
 
@@ -120,20 +129,24 @@ rulesとの関係性は発表当初から変わっていないように思えま
 ## Commands と Skills
 
 v2.1.3の統合により、commandsはほとんどskillsの簡易版のようなものになりました。
-ユーザーからの呼び出しに関する設定(`user-invocable`)とエージェントからの呼び出しに関する設定(`disable-model-invocation`)もフロントマターに存在する今、個人的にはcommandsをあえて利用する理由も見つかりません。
+ユーザーからの呼び出しに関する設定(`user-invocable`)とエージェントからの呼び出しに関する設定(`disable-model-invocation`)もフロントマターに存在します。
+これは、`/`skillsを明示的に呼び出す設定とエージェントから暗黙的に利用する設定の利用可否をskillsに設定できることを意味します。
+そうなると、従来commandsの振る舞いは`user-invocable: true(default)`かつ`disable-model-invocation: true`に設定することでskillsで表現できます。
+skillsには指示を複数ファイルに分割可能であり、exampleやtemplateを個別ファイルに分けて拡張しやすいという利点がそもそも存在するため、個人的にはcommandsをあえて利用する理由も見つかりません。
 実際、私はskillsにSKILL.mdのみを配置するスタイルに移行しました。
 
 ## Subagents と Skills
 
-これに関しては以下記事で詳しく考察されています。
+`context: fork`オプションの追加により、やや境界は曖昧になっていますが、使い分けに関しては以下記事で詳しく考察、整理されています。
 
 https://giginet.hateblo.jp/entry/2026/01/27/202636
 
-giginetさんの記事ではskillsの内容を「情報参照用(Reference Content)」と「タスク実行用(Task Content)」の2種類に分類して整理されています。結論だけ引用させていただくと、
+giginetさんの記事では[公式ドキュメント](https://code.claude.com/docs/en/skills#frontmatter-reference)を引用しつつ、skillsの内容を「情報参照用(Reference Content)」と「タスク実行用(Task Content)」の2種類に分類したうえでどのケースでskillsを利用すべきか整理されています。詳しくは記事をご覧ください。
+結論だけ引用させていただくと、
 
 - skillsには情報参照用のReference Contentとタスク実行用のTask Contentがある
-- Reference Contentとしてのskillsを利用する際はsubagentsを主とし、`skills`フロントマターに展開する
-- Task Contentとしてのskillsを利用する際はskillsを主とし、`agent`フロントマターでskills(Task Content)を実行するエージェントを選択する
+- Reference Contentとしてのskillsを利用する際はsubagentsを主とし、`skills`フロントマターにReference Contentを展開して利用する
+- Task Contentとしてのskillsを利用する際はskillsを主とし、`agent`フロントマターでskills(Task Content)を実行するエージェントを選択して利用する
 
 # まとめ
 
